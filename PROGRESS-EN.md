@@ -119,6 +119,11 @@ The attempt at visual verification with headless Chrome was inconclusive: in hea
   - Semantic Versioning 2.0.0.
 - It also includes a summary of the original specification's security constraints, so they are recorded in the repository.
 
+## Iteration 6 — Version 1.0.1 ✅
+- The `manifest.json` `description` was translated to English at the user's request. This replaces the iteration 4 decision to keep it in Portuguese.
+- It is a user-visible change in a shipped file with no behavior change, so it is a PATCH under SemVer: version **1.0.1**, tag `v1.0.1` and notes in `docs/release-notes/v1.0.1.md`.
+- `CLAUDE.md` now requires proactive versioning: whenever a change warrants a new version, the bump and release are part of the task.
+
 ## Known limitations
 - If the extension is reloaded without reloading the page, the old (orphaned) script stays active in the tab until the page is reloaded. Chrome does not inject the new script into tabs that are already open, so there is no duplication. Detecting the orphaned script would require `chrome.runtime`, which is forbidden.
 - Pausing with `V` calls `video.pause()` directly, and Instagram's own play/pause icon may not reflect the change right away.

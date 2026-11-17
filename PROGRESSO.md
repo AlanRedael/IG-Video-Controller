@@ -117,6 +117,11 @@ A tentativa de verificação visual com Chrome headless foi inconclusiva: no mod
   - Semantic Versioning 2.0.0.
 - Inclui também um resumo das restrições de segurança da especificação original, para que fiquem registradas no repositório.
 
+## Iteração 6 — Versão 1.0.1 ✅
+- A `description` do `manifest.json` passou para o inglês, a pedido do usuário. Isso substitui a decisão da iteração 4 de mantê-la em português.
+- Mudança visível ao usuário em arquivo distribuído, sem alterar comportamento, então é um PATCH pelo SemVer: versão **1.0.1**, tag `v1.0.1` e notas em `docs/release-notes/v1.0.1.md`.
+- O `CLAUDE.md` passou a pedir versionamento proativo: sempre que a mudança justificar uma nova versão, o bump e a release fazem parte da tarefa.
+
 ## Limitações conhecidas
 - Se a extensão for recarregada sem recarregar a página, o script antigo (órfão) continua ativo na aba até a página ser recarregada. O Chrome não injeta o novo script em abas já abertas, então não há duplicação. Detectar o script órfão exigiria `chrome.runtime`, que é proibido.
 - Pausar com `V` chama `video.pause()` diretamente, e o ícone de play/pause do próprio Instagram pode não refletir a mudança na hora.
