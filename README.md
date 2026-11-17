@@ -1,80 +1,103 @@
 # IG Video Controller
 
-Extensão para o Google Chrome (Manifest V3) que adiciona um **controlador de vídeo** aos vídeos do Instagram (feed, Reels e Stories) em `https://www.instagram.com/*`.
+A Google Chrome extension (Manifest V3) that adds a **video controller** to Instagram videos (feed, Reels and Stories) on `https://www.instagram.com/*`.
 
-A extensão faz **somente** controle de reprodução: velocidade, avançar/voltar e pausar.
+The extension does **only** playback control: speed, skipping back/forward and pause.
 
-## Atalhos
+## Shortcuts
 
-| Ação | Atalho | Botão no overlay |
+| Action | Shortcut | Overlay button |
 |---|---|---|
-| Velocidade normal (1x) | `R` | `1x` |
-| Velocidade 1,5x | `G` | `1,5x` |
-| Velocidade 2x | `H` | `2x` |
-| Diminuir velocidade (−0,25x) | `S` | — |
-| Aumentar velocidade (+0,25x) | `D` | — |
-| Voltar 5 segundos | `Z` | — |
-| Avançar 5 segundos | `X` | — |
-| Pausar / retomar | `V` | — |
+| Normal speed (1x) | `R` | `1x` |
+| 1.5x speed | `G` | `1,5x` |
+| 2x speed | `H` | `2x` |
+| Decrease speed (−0.25x) | `S` | — |
+| Increase speed (+0.25x) | `D` | — |
+| Back 5 seconds | `Z` | — |
+| Forward 5 seconds | `X` | — |
+| Pause / resume | `V` | — |
 
-- A velocidade fica sempre entre **0,25x e 4x**.
-- Um overlay discreto aparece na **borda inferior do vídeo** com o tempo (`0:12 / 0:45`), a velocidade atual, os botões `1x`, `1,5x` e `2x` (todos alinhados à esquerda) e uma **barra de progresso**.
-  - O overlay fica oculto e aparece quando você passa o mouse sobre o vídeo, pausa o vídeo ou muda a velocidade. Enquanto o vídeo está pausado ele continua visível; durante a reprodução, some após ~2 s sem interação.
-  - A barra é fina. Com o mouse em cima, ela engrossa e mostra uma bolinha. **Clique ou arraste** para ir a outro ponto do vídeo.
-- A velocidade escolhida **continua valendo ao trocar de Reel/vídeo** enquanto a aba estiver aberta. Ao recarregar a página, ela volta para 1x (não há persistência entre sessões).
-- Os atalhos **não funcionam** enquanto você digita (DMs, comentários, busca) nem quando `Ctrl`, `Alt` ou `Cmd` estão pressionados.
+- Speed always stays between **0.25x and 4x**.
+- A subtle overlay appears at the **bottom edge of the video** with the time (`0:12 / 0:45`), the current speed and the `1x`, `1,5x` and `2x` buttons (all aligned to the left), plus a **progress bar**.
+  - The overlay is hidden and appears when you hover over the video, pause it or change the speed. It stays visible while the video is paused; during playback it hides after ~2 s without interaction.
+  - The bar is thin. On hover it gets thicker and shows a handle. **Click or drag** to jump to another point in the video.
+- The chosen speed **carries over when you switch Reels/videos** while the tab stays open. When you reload the page it goes back to 1x (nothing is persisted between sessions).
+- Shortcuts **do not fire** while you are typing (DMs, comments, search) or while `Ctrl`, `Alt` or `Cmd` is held down.
 
-## Privacidade
+> The overlay labels use a decimal comma (`1,5x`), as defined in the original specification.
 
-**A extensão não coleta, armazena nem transmite nenhum dado.**
+## Privacy
 
-- Não faz nenhuma requisição de rede.
-- Não usa armazenamento (`chrome.storage`, cookies, `localStorage` etc.).
-- Não tem service worker em segundo plano, popup nem página de opções.
-- Só lê os elementos `<video>` da página. Não lê textos, nomes de usuário, legendas, comentários ou mensagens.
-- Nunca registra as teclas digitadas.
-- Todo o código está em um único arquivo legível, `content.js`, sem bibliotecas de terceiros.
+**The extension does not collect, store or transmit any data.**
 
-## Permissões exibidas na instalação
+- It makes no network requests.
+- It uses no storage (`chrome.storage`, cookies, `localStorage`, etc.).
+- It has no background service worker, popup or options page.
+- It only reads the page's `<video>` elements. It does not read text, usernames, captions, comments or messages.
+- It never records the keys you type.
+- All the code lives in a single readable file, `content.js`, with no third-party libraries.
 
-A extensão **não declara nenhuma permissão**. O único acesso é a execução do script em `https://www.instagram.com/*`, então o Chrome deve mostrar apenas algo como:
+## Permissions shown at install time
 
-> **Ler e alterar seus dados em www.instagram.com**
+The extension **declares no permissions**. Its only access is running the script on `https://www.instagram.com/*`, so Chrome should show only something like:
 
-Se aparecer qualquer outro aviso, não instale e verifique os arquivos.
+> **Read and change your data on www.instagram.com**
 
-## Instalação (modo desenvolvedor)
+If any other warning appears, do not install it and check the files.
 
-1. Extraia `ig-video-controller.zip` para uma pasta (ou use esta pasta diretamente).
-2. No Chrome, abra `chrome://extensions`.
-3. Ative **Modo do desenvolvedor** (canto superior direito).
-4. Clique em **Carregar sem compactação** e selecione a pasta que contém `manifest.json`.
-5. Abra ou recarregue `https://www.instagram.com/`.
+## Installation (developer mode)
 
-## Verificação de segurança (para desenvolvedores)
+1. Extract `ig-video-controller.zip` into a folder (or use this repository folder directly).
+2. In Chrome, open `chrome://extensions`.
+3. Turn on **Developer mode** (top-right corner).
+4. Click **Load unpacked** and select the folder that contains `manifest.json`.
+5. Open or reload `https://www.instagram.com/`.
+
+Ready-to-install zips are attached to each [GitHub release](https://github.com/AlanRedael/IG-Video-Controller/releases).
+
+## Security check (for developers)
 
 ```bash
-bash scripts/check-security.sh            # verifica a pasta e o zip, se existir
-bash scripts/check-security.sh outro.zip  # verifica um zip específico
+bash scripts/check-security.sh            # checks the folder and the zip, if present
+bash scripts/check-security.sh other.zip  # checks a specific zip
 ```
 
-Requer apenas `bash`, `grep` e Python 3 (biblioteca padrão). Retorna código `0` se tudo estiver aprovado.
+It only needs `bash`, `grep` and Python 3 (standard library). It exits with code `0` when everything passes.
 
-## Roteiro de testes
+To build the distribution zip:
 
-Depois de carregar a extensão, faça estes testes e marque cada item:
+```bash
+python -c "import zipfile; z=zipfile.ZipFile('ig-video-controller.zip','w',zipfile.ZIP_DEFLATED); [z.write(p,p) for p in ('manifest.json','content.js','icons/16.png','icons/48.png','icons/128.png')]; z.close()"
+bash scripts/check-security.sh
+```
 
-- [ ] **1. Aviso de instalação:** em `chrome://extensions` → *Detalhes* da extensão, o Chrome mostra apenas acesso a `www.instagram.com`, sem nenhuma outra permissão.
-- [ ] **2. Rede:** com o Instagram aberto, abra DevTools (`F12`) → aba **Network**. Copie o ID da extensão em `chrome://extensions` e cole no filtro (ou filtre por `chrome-extension://`). Navegue e use os atalhos. **Nenhuma requisição** deve aparecer.
-- [ ] **3. Predefinições:** em um vídeo, pressione `R`, `G` e `H` e clique nos botões `1x`, `1,5x` e `2x`. A velocidade muda e o overlay mostra o valor correto. Clicar num botão **não** pausa o vídeo.
-- [ ] **4. Persistência na sessão:** com 2x ativo, passe por vários Reels. A velocidade continua em 2x.
-- [ ] **5. Instância única:** com a aba do Instagram aberta, recarregue a extensão em `chrome://extensions`, volte à aba, recarregue a página e navegue. Existe um único overlay, e cada tecla muda a velocidade uma única vez (por exemplo, `D` a partir de 1x vai para 1,25x, não para 1,5x).
-- [ ] **6. Privacidade de digitação:** digite `g`, `h`, `s`, `d` numa DM, num comentário ou na busca. O vídeo **não** muda e as letras aparecem normalmente no campo.
-- [ ] **7. Limites:** pressione `D` várias vezes; a velocidade para em **4x**. Pressione `S` várias vezes; ela para em **0,25x**.
-- [ ] **8. Barra de progresso:**
-  - Com o vídeo tocando, o overlay só aparece ao passar o mouse sobre o vídeo e some ~2 s depois de o mouse parar.
-  - Ao pausar (clicando no vídeo ou com `V`), o overlay aparece e **permanece** visível.
-  - Com o mouse sobre a barra, ela engrossa e aparece a bolinha.
-  - Clicar ou arrastar na barra muda a posição do vídeo sem pausá-lo nem retomá-lo, e o tempo `0:12 / 0:45` acompanha.
-  - Durante o arrasto, soltar o mouse fora do vídeo não causa nenhum clique no Instagram.
-- [ ] **Extra:** `Z`/`X` voltam/avançam 5 s; `V` pausa e retoma.
+## Repository layout
+
+```
+manifest.json            Extension manifest (no permissions)
+content.js               The whole extension (single content script)
+icons/                   16, 48 and 128 px icons
+scripts/check-security.sh
+docs/release-notes/      Release notes, one file per version
+PROGRESSO.md             Development log (Portuguese)
+PROGRESS-EN.md           Development log (English)
+```
+
+## Test checklist
+
+After loading the extension, run these tests and tick each item:
+
+- [ ] **1. Install warning:** in `chrome://extensions` → the extension's *Details*, Chrome shows only access to `www.instagram.com`, with no other permission.
+- [ ] **2. Network:** with Instagram open, open DevTools (`F12`) → **Network** tab. Copy the extension ID from `chrome://extensions` and paste it into the filter (or filter by `chrome-extension://`). Browse and use the shortcuts. **No requests** should appear.
+- [ ] **3. Presets:** on a video, press `R`, `G` and `H` and click the `1x`, `1,5x` and `2x` buttons. The speed changes and the overlay shows the right value. Clicking a button does **not** pause the video.
+- [ ] **4. Persistence within the session:** with 2x active, scroll through several Reels. The speed stays at 2x.
+- [ ] **5. Single instance:** with an Instagram tab open, reload the extension in `chrome://extensions`, go back to the tab, reload the page and browse. There is a single overlay, and each key changes the speed only once (for example, `D` from 1x goes to 1.25x, not 1.5x).
+- [ ] **6. Typing privacy:** type `g`, `h`, `s`, `d` in a DM, a comment or the search box. The video does **not** change and the letters appear normally in the field.
+- [ ] **7. Limits:** press `D` repeatedly; speed stops at **4x**. Press `S` repeatedly; it stops at **0.25x**.
+- [ ] **8. Progress bar:**
+  - While the video plays, the overlay only appears on hover and hides ~2 s after the pointer stops.
+  - When you pause (clicking the video or with `V`), the overlay appears and **stays** visible.
+  - Hovering over the bar makes it thicker and shows the handle.
+  - Clicking or dragging on the bar changes the video position without pausing or resuming it, and the `0:12 / 0:45` time follows along.
+  - While dragging, releasing the mouse outside the video does not trigger any click on Instagram.
+- [ ] **Extra:** `Z`/`X` go back/forward 5 s; `V` pauses and resumes.

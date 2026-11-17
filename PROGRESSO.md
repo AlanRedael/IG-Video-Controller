@@ -101,6 +101,14 @@ A tentativa de verificação visual com Chrome headless foi inconclusiva: no mod
 ## Validação no navegador ✅
 - 2026-11-17: o usuário executou o roteiro de testes do README no Chrome, com o Instagram real, e todos os itens funcionaram.
 
+## Iteração 4 — Repositório, documentação e inglês ✅
+- Repositório git criado e publicado em https://github.com/AlanRedael/IG-Video-Controller (`main`). O `.gitattributes` fixa finais de linha LF, para o `check-security.sh` não quebrar no Windows, e o `.gitignore` exclui o `.zip`.
+- Tag `v1.0.0` publicada. A Release no GitHub ainda precisa ser criada pelo usuário, porque o `gh` não está instalado e o uso da credencial do git na API foi bloqueado pela permissão do Claude Code.
+- Nova pasta `docs/release-notes/`, com um arquivo por versão (`v1.0.0.md`) e um `README.md` com o passo a passo de release.
+- `README.md` passou a ser em inglês. Este arquivo continua em português, e `PROGRESS-EN.md` é a versão em inglês.
+- Comentários do `content.js` e do `check-security.sh` traduzidos para inglês. As mensagens de saída do script também, para não misturar idiomas: o resultado agora é `RESULT: PASSED` / `RESULT: FAILED`. Nenhuma lógica foi alterada.
+- Ficaram em português, de propósito: os rótulos da interface (`1,5x`, com vírgula, como na especificação) e a `description` do `manifest.json`, que a especificação manda usar exatamente como está.
+
 ## Limitações conhecidas
 - Se a extensão for recarregada sem recarregar a página, o script antigo (órfão) continua ativo na aba até a página ser recarregada. O Chrome não injeta o novo script em abas já abertas, então não há duplicação. Detectar o script órfão exigiria `chrome.runtime`, que é proibido.
 - Pausar com `V` chama `video.pause()` diretamente, e o ícone de play/pause do próprio Instagram pode não refletir a mudança na hora.
