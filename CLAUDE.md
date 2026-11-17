@@ -53,6 +53,8 @@ The version lives in `manifest.json` (`"version": "MAJOR.MINOR.PATCH"`) and in t
 - **MINOR:** new backward-compatible features (new shortcut, new overlay control, new option).
 - **PATCH:** backward-compatible bug fixes, performance and visual tweaks that change no behavior.
 - Docs-only, tooling-only or comment-only changes do not need a new version.
+- Any change to what ships in the zip (`manifest.json`, `content.js`, `icons/`) that is visible to users needs a new version. This includes metadata such as the manifest `description`, which is a PATCH.
+- **Version proactively:** whenever a change warrants a new version, do the bump and the full release flow below as part of the task, without waiting to be asked. Tell the user which version was chosen and why.
 - Chrome only accepts 1–4 dot-separated integers in `"version"`, so pre-release labels (`-beta.1`) may be used **only in git tags**, never in `manifest.json`.
 - Release flow (details in `docs/release-notes/README.md`):
   1. bump `manifest.json`;
@@ -60,7 +62,7 @@ The version lives in `manifest.json` (`"version": "MAJOR.MINOR.PATCH"`) and in t
   3. build the zip and run the security check;
   4. `chore(release): X.Y.Z` commit;
   5. annotated tag `vX.Y.Z`;
-  6. GitHub release with the notes and the zip.
+  6. GitHub release with the notes and the zip. If no authenticated `gh` is available, push the tag and ask the user to create the release on the website. Never read stored credentials to do it.
 - Never move or delete a published tag.
 
 ## 5. Non-negotiable extension constraints
@@ -80,4 +82,4 @@ If a task seems to require breaking any of these, stop and ask the user.
 - **Single instance:** a `globalThis.__igvcLoaded` guard; a `WeakSet` of controlled videos; one `keydown` listener, one `MutationObserver`, one overlay host in a closed Shadow DOM.
 - **Distribution zip** contains only `manifest.json`, `content.js` and `icons/`. It is not committed (see `.gitignore`).
 - Do not install packages or download files, do not change Chrome settings and do not publish to the Chrome Web Store.
-- Code comments and repository docs are in English. `PROGRESSO.md` is the Portuguese log, so keep `PROGRESSO.md` and `PROGRESS-EN.md` in sync.
+- Code comments, repository docs and the manifest `description` are in English. The overlay labels keep the decimal comma (`1,5x`) from the original specification. `PROGRESSO.md` is the Portuguese log, so keep `PROGRESSO.md` and `PROGRESS-EN.md` in sync.
