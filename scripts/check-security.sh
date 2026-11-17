@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Verificação de segurança do IG Video Controller.
+# Security check for IG Video Controller.
 #
-# Uso:
-#   scripts/check-security.sh            # verifica a pasta (e o zip, se existir)
-#   scripts/check-security.sh <arq.zip>  # verifica a pasta e o zip indicado
+# Usage:
+#   scripts/check-security.sh            # checks the folder (and the zip, if present)
+#   scripts/check-security.sh <file.zip> # checks the folder and the given zip
 #
-# Sai com código != 0 se qualquer regra for violada.
-# Dependências: bash, grep e Python 3 (somente biblioteca padrão).
+# Exits with a non-zero code if any rule is violated.
+# Requirements: bash, grep and Python 3 (standard library only).
 
 set -u
 export PYTHONIOENCODING=utf-8
@@ -15,7 +15,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ZIP="${1:-$ROOT/ig-video-controller.zip}"
 FAIL=0
 
-fail() { echo "FALHA: $*"; FAIL=1; }
+fail() { echo "FAIL:  $*"; FAIL=1; }
 ok()   { echo "ok:    $*"; }
 
 # --- Python 3 (stdlib) -------------------------------------------------------
@@ -27,11 +27,11 @@ for cand in python3 python; do
   fi
 done
 if [ -z "$PY" ]; then
-  echo "ERRO: Python 3 não encontrado (necessário para validar JSON e zip)."
+  echo "ERROR: Python 3 not found (required to validate JSON and zip)."
   exit 2
 fi
 
-# --- Termos proibidos em content.js ------------------------------------------
+# --- Forbidden terms in content.js ------------------------------------------
 FORBIDDEN_JS=(
   "fetch" "XMLHttpRequest" "WebSocket" "EventSource" "sendBeacon"
   "import(" "eval(" "new Function" "innerHTML" "outerHTML"
@@ -40,30 +40,30 @@ FORBIDDEN_JS=(
   "postMessage" "console."
 )
 
-# Padrões adicionais (regex estendida) da seção 2.2.
+# Additional patterns (extended regex) from section 2.2.
 FORBIDDEN_JS_RE=(
-  'set(Timeout|Interval)[[:space:]]*\([[:space:]]*["'"'"'`]'   # timer com string
+  'set(Timeout|Interval)[[:space:]]*\([[:space:]]*["'"'"'`]'   # timer with a string
   'createElement[[:space:]]*\([[:space:]]*["'"'"'`](script|img|iframe|link|object|embed|frame|source|audio|video)["'"'"'`]'
-  '\.(src|href|srcdoc)[[:space:]]*='                          # atribuição de src/href
+  '\.(src|href|srcdoc)[[:space:]]*='                          # src/href assignment
   'setAttribute[[:space:]]*\([[:space:]]*["'"'"'`](src|href|srcdoc)'
   '(^|[^A-Za-z0-9_.])Function[[:space:]]*\('                  # Function(...)
   'importScripts'
   '\bworld\b'
-  'chrome\.'                                                  # nenhuma API chrome.*
+  'chrome\.'                                                  # no chrome.* API at all
 )
 
 check_js() {
   local file="$1" label="$2" term
-  if [ ! -f "$file" ]; then fail "$label: arquivo ausente"; return; fi
+  if [ ! -f "$file" ]; then fail "$label: file missing"; return; fi
   for term in "${FORBIDDEN_JS[@]}"; do
     if grep -nF -- "$term" "$file" >/dev/null; then
-      fail "$label contém termo proibido: '$term'"
+      fail "$label contains forbidden term: '$term'"
       grep -nF -- "$term" "$file" | sed 's/^/         /'
     fi
   done
   for term in "${FORBIDDEN_JS_RE[@]}"; do
     if grep -nE -- "$term" "$file" >/dev/null; then
-      fail "$label contém padrão proibido: /$term/"
+      fail "$label contains forbidden pattern: /$term/"
       grep -nE -- "$term" "$file" | sed 's/^/         /'
     fi
   done
@@ -78,13 +78,13 @@ FORBIDDEN_MANIFEST=(
 
 check_manifest() {
   local file="$1" label="$2" term
-  if [ ! -f "$file" ]; then fail "$label: arquivo ausente"; return; fi
+  if [ ! -f "$file" ]; then fail "$label: file missing"; return; fi
   for term in "${FORBIDDEN_MANIFEST[@]}"; do
     if grep -nF -- "$term" "$file" >/dev/null; then
-      fail "$label contém termo proibido: $term"
+      fail "$label contains forbidden term: $term"
     fi
   done
-  # Validação estrutural.
+  # Structural validation.
   local out
   if ! out="$("$PY" -I - "$file" <<'PYEOF'
 import json, sys
@@ -106,35 +106,35 @@ def walk(node, where):
     if isinstance(node, dict):
         for k, v in node.items():
             if k in FORBIDDEN_KEYS:
-                errors.append(f"chave proibida '{k}' em {where}")
+                errors.append(f"forbidden key '{k}' at {where}")
             walk(v, f"{where}.{k}")
     elif isinstance(node, list):
         for i, v in enumerate(node):
             walk(v, f"{where}[{i}]")
     elif node == "MAIN":
-        errors.append(f"valor 'MAIN' em {where}")
+        errors.append(f"value 'MAIN' at {where}")
 
 walk(m, "manifest")
 
 if m.get("manifest_version") != 3:
-    errors.append("manifest_version deve ser 3")
+    errors.append("manifest_version must be 3")
 
 cs = m.get("content_scripts")
 if not isinstance(cs, list) or len(cs) != 1:
-    errors.append("deve haver exatamente um content_script")
+    errors.append("there must be exactly one content_script")
 else:
     s = cs[0]
     if s.get("matches") != ["https://www.instagram.com/*"]:
-        errors.append(f"matches inválido: {s.get('matches')!r}")
+        errors.append(f"invalid matches: {s.get('matches')!r}")
     if s.get("js") != ["content.js"]:
-        errors.append(f"js inválido: {s.get('js')!r}")
+        errors.append(f"invalid js: {s.get('js')!r}")
     if s.get("all_frames") is not False:
-        errors.append("all_frames deve ser false")
+        errors.append("all_frames must be false")
     if s.get("run_at") != "document_idle":
-        errors.append("run_at deve ser document_idle")
+        errors.append("run_at must be document_idle")
     extra = set(s) - {"matches", "js", "run_at", "all_frames"}
     if extra:
-        errors.append(f"chaves inesperadas em content_scripts: {sorted(extra)}")
+        errors.append(f"unexpected keys in content_scripts: {sorted(extra)}")
 
 allowed_top = {
     "manifest_version", "name", "version", "description",
@@ -142,19 +142,19 @@ allowed_top = {
 }
 extra_top = set(m) - allowed_top
 if extra_top:
-    errors.append(f"chaves de topo inesperadas: {sorted(extra_top)}")
+    errors.append(f"unexpected top-level keys: {sorted(extra_top)}")
 
 csp = (m.get("content_security_policy") or {}).get("extension_pages", "")
 for directive in ("script-src 'self'", "object-src 'none'", "connect-src 'none'"):
     if directive not in csp:
-        errors.append(f"CSP sem '{directive}'")
+        errors.append(f"CSP missing '{directive}'")
 
 for e in errors:
     print(e)
 sys.exit(1 if errors else 0)
 PYEOF
 )"; then
-    fail "$label: validação estrutural"
+    fail "$label: structural validation"
     echo "$out" | sed 's/^/         /'
   fi
 }
@@ -166,19 +166,19 @@ check_tree() {
   check_manifest "$dir/manifest.json" "$label/manifest.json"
   check_js "$dir/content.js" "$label/content.js"
   for s in 16 48 128; do
-    [ -f "$dir/icons/$s.png" ] || fail "$label/icons/$s.png ausente"
+    [ -f "$dir/icons/$s.png" ] || fail "$label/icons/$s.png missing"
   done
-  [ $FAIL -eq 0 ] && ok "$label: manifest, content.js e ícones aprovados"
+  [ $FAIL -eq 0 ] && ok "$label: manifest, content.js and icons passed"
   FAIL=$(( before | FAIL ))
 }
 
-# --- Pasta -------------------------------------------------------------------
-echo "== Verificando pasta: $ROOT"
-check_tree "$ROOT" "pasta"
+# --- Folder -------------------------------------------------------------------
+echo "== Checking folder: $ROOT"
+check_tree "$ROOT" "folder"
 
 # --- Zip ---------------------------------------------------------------------
 if [ -f "$ZIP" ]; then
-  echo "== Verificando zip: $ZIP"
+  echo "== Checking zip: $ZIP"
   TMP="$(mktemp -d)"
   trap 'rm -rf "$TMP"' EXIT
   if out="$("$PY" -I - "$ZIP" "$TMP" <<'PYEOF'
@@ -191,31 +191,31 @@ with zipfile.ZipFile(zpath) as z:
     names = z.namelist()
     for n in names:
         if not allowed.match(n):
-            errors.append(f"arquivo não permitido no zip: {n}")
+            errors.append(f"file not allowed in zip: {n}")
     for required in ("manifest.json", "content.js"):
         if required not in names:
-            errors.append(f"zip sem {required}")
+            errors.append(f"zip is missing {required}")
     if not errors:
-        z.extractall(dest)  # nomes já validados pela whitelist acima
+        z.extractall(dest)  # names already validated by the allowlist above
 for e in errors:
     print(e)
 sys.exit(1 if errors else 0)
 PYEOF
 )"; then
-    ok "zip: contém somente manifest.json, content.js e icons/*"
+    ok "zip: contains only manifest.json, content.js and icons/*"
     check_tree "$TMP" "zip"
   else
-    fail "zip: conteúdo inválido"
+    fail "zip: invalid contents"
     echo "$out" | sed 's/^/         /'
   fi
 else
-  echo "== Zip não encontrado ($ZIP) — verificação do zip ignorada."
+  echo "== Zip not found ($ZIP) — zip check skipped."
 fi
 
 echo
 if [ $FAIL -ne 0 ]; then
-  echo "RESULTADO: REPROVADO"
+  echo "RESULT: FAILED"
   exit 1
 fi
-echo "RESULTADO: APROVADO"
+echo "RESULT: PASSED"
 exit 0
