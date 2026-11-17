@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "IG Video Controller",
   "version": "1.0.0",
-  "description": "Controle de velocidade e navegação para vídeos do Instagram. Não coleta nem transmite dados.",
+  "description": "Speed and navigation controls for Instagram videos. Does not collect or transmit any data.",
   "content_scripts": [
     {
       "matches": ["https://www.instagram.com/*"],
