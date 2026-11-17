@@ -1,0 +1,9 @@
+# Pacote de distribuição (gerado; ver PROGRESSO.md)
+*.zip
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "IG Video Controller",
+  "version": "1.0.0",
+  "description": "Controle de velocidade e navegação para vídeos do Instagram. Não coleta nem transmite dados.",
+  "content_scripts": [
+    {
+      "matches": ["https://www.instagram.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'; connect-src 'none'"
+  },
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" }
+}
