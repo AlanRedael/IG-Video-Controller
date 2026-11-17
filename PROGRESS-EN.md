@@ -111,6 +111,14 @@ The attempt at visual verification with headless Chrome was inconclusive: in hea
 - Comments in `content.js` and `check-security.sh` translated to English. The script's output messages too, to avoid mixing languages: the result is now `RESULT: PASSED` / `RESULT: FAILED`. No logic was changed.
 - Intentionally left in Portuguese: the UI labels (`1,5x`, with a decimal comma, as in the specification) and the `description` in `manifest.json`, which the specification says to use exactly as given.
 
+## Iteration 5 — Working rules (CLAUDE.md) ✅
+- New `CLAUDE.md` with rules for anyone developing the project with Claude Code:
+  - never expose credentials;
+  - commits grouped by context;
+  - Conventional Commits 1.0.0;
+  - Semantic Versioning 2.0.0.
+- It also includes a summary of the original specification's security constraints, so they are recorded in the repository.
+
 ## Known limitations
 - If the extension is reloaded without reloading the page, the old (orphaned) script stays active in the tab until the page is reloaded. Chrome does not inject the new script into tabs that are already open, so there is no duplication. Detecting the orphaned script would require `chrome.runtime`, which is forbidden.
 - Pausing with `V` calls `video.pause()` directly, and Instagram's own play/pause icon may not reflect the change right away.

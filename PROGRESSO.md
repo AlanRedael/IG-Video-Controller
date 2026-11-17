@@ -109,6 +109,14 @@ A tentativa de verificação visual com Chrome headless foi inconclusiva: no mod
 - Comentários do `content.js` e do `check-security.sh` traduzidos para inglês. As mensagens de saída do script também, para não misturar idiomas: o resultado agora é `RESULT: PASSED` / `RESULT: FAILED`. Nenhuma lógica foi alterada.
 - Ficaram em português, de propósito: os rótulos da interface (`1,5x`, com vírgula, como na especificação) e a `description` do `manifest.json`, que a especificação manda usar exatamente como está.
 
+## Iteração 5 — Regras de trabalho (CLAUDE.md) ✅
+- Novo `CLAUDE.md`, com regras para quem desenvolver o projeto com o Claude Code:
+  - nunca expor credenciais;
+  - commits agrupados por contexto;
+  - Conventional Commits 1.0.0;
+  - Semantic Versioning 2.0.0.
+- Inclui também um resumo das restrições de segurança da especificação original, para que fiquem registradas no repositório.
+
 ## Limitações conhecidas
 - Se a extensão for recarregada sem recarregar a página, o script antigo (órfão) continua ativo na aba até a página ser recarregada. O Chrome não injeta o novo script em abas já abertas, então não há duplicação. Detectar o script órfão exigiria `chrome.runtime`, que é proibido.
 - Pausar com `V` chama `video.pause()` diretamente, e o ícone de play/pause do próprio Instagram pode não refletir a mudança na hora.

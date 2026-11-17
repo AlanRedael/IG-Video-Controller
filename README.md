@@ -81,6 +81,7 @@ scripts/check-security.sh
 docs/release-notes/      Release notes, one file per version
 PROGRESSO.md             Development log (Portuguese)
 PROGRESS-EN.md           Development log (English)
+CLAUDE.md                Working rules for AI-assisted development (commits, versioning, constraints)
 ```
 
 ## Test checklist
