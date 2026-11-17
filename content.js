@@ -1,19 +1,19 @@
 /*
  * IG Video Controller — content script.
- * Apenas controla reprodução de elementos <video> em www.instagram.com.
- * Não lê conteúdo da página, não usa rede, não armazena nada.
+ * Only controls playback of <video> elements on www.instagram.com.
+ * Does not read page content, use the network or store anything.
  */
 (() => {
   "use strict";
 
   // ---------------------------------------------------------------------------
-  // 1. Instância única
+  // 1. Single instance
   // ---------------------------------------------------------------------------
   if (globalThis.__igvcLoaded) return;
   globalThis.__igvcLoaded = true;
 
   // ---------------------------------------------------------------------------
-  // 2. Constantes (somente estes valores podem virar velocidade)
+  // 2. Constants (the only values that can become a playback rate)
   // ---------------------------------------------------------------------------
   const PRESETS = Object.freeze({ r: 1, g: 1.5, h: 2 });
   const STEP = 0.25;
@@ -28,7 +28,7 @@
     Object.freeze({ key: "h", label: "2x" }),
   ]);
 
-  // Ações de teclado: tecla (minúscula) -> função sem argumentos externos.
+  // Keyboard actions: key (lowercase) -> function with no external arguments.
   const ACTIONS = Object.freeze({
     r: () => setRate(PRESETS.r),
     g: () => setRate(PRESETS.g),
@@ -41,12 +41,12 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Estado
+  // State
   // ---------------------------------------------------------------------------
   let desiredRate = PRESETS.r;
-  const controlled = new WeakSet(); // vídeos que já receberam listeners
-  const observed = new Set(); // vídeos observados pelo IntersectionObserver
-  const visibility = new WeakMap(); // vídeo -> intersectionRatio
+  const controlled = new WeakSet(); // videos that already have listeners
+  const observed = new Set(); // videos watched by the IntersectionObserver
+  const visibility = new WeakMap(); // video -> intersectionRatio
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -58,19 +58,19 @@
   );
 
   // ---------------------------------------------------------------------------
-  // Utilidades de velocidade
+  // Rate helpers
   // ---------------------------------------------------------------------------
   function clampRate(rate) {
     if (!Number.isFinite(rate)) return null;
     const clamped = Math.min(MAX_RATE, Math.max(MIN_RATE, rate));
-    // Arredonda para centésimos para evitar ruído de ponto flutuante.
+    // Round to hundredths to avoid floating-point noise.
     return Math.round(clamped * 100) / 100;
   }
 
   function applyRate(video) {
     if (!(video instanceof HTMLVideoElement)) return;
     try {
-      // Compara antes de atribuir para não gerar loop de "ratechange".
+      // Compare before assigning so "ratechange" does not loop.
       if (video.defaultPlaybackRate !== desiredRate) {
         video.defaultPlaybackRate = desiredRate;
       }
@@ -78,7 +78,7 @@
         video.playbackRate = desiredRate;
       }
     } catch (_) {
-      // Alguns estados de mídia rejeitam a atribuição; ignorar silenciosamente.
+      // Some media states reject the assignment; ignore silently.
     }
   }
 
@@ -97,7 +97,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Vídeo ativo
+  // Active video
   // ---------------------------------------------------------------------------
   function isPlaying(video) {
     return !video.paused && !video.ended && video.readyState > 2;
@@ -115,7 +115,7 @@
       const ratio = visibility.get(video) || 0;
       if (isPlaying(video)) {
         if (!anyPlaying) anyPlaying = video;
-        // Vídeo tocando fora da tela não deve "roubar" o foco do visível.
+        // An off-screen playing video must not steal focus from the visible one.
         if (ratio > 0 && ratio > bestPlayingRatio) {
           bestPlaying = video;
           bestPlayingRatio = ratio;
@@ -130,7 +130,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Ações
+  // Actions
   // ---------------------------------------------------------------------------
   function seekBy(seconds) {
     if (!Number.isFinite(seconds)) return;
@@ -155,7 +155,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Registro de vídeos
+  // Video registration
   // ---------------------------------------------------------------------------
   function attach(video) {
     if (!observed.has(video)) {
@@ -170,7 +170,7 @@
     video.addEventListener("play", reapply);
     video.addEventListener("playing", reapply);
     video.addEventListener("loadedmetadata", reapply);
-    // Ao pausar o vídeo ativo, mostra o overlay (fica visível enquanto pausado).
+    // When the active video pauses, show the overlay (it stays visible while paused).
     video.addEventListener("pause", () => {
       if (video === getActiveVideo()) showOverlay();
     });
@@ -178,7 +178,7 @@
   }
 
   function scan() {
-    // Remove do IntersectionObserver vídeos que saíram do DOM.
+    // Stop observing videos that left the DOM.
     for (const video of observed) {
       if (!video.isConnected) {
         io.unobserve(video);
@@ -202,9 +202,9 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Overlay (Shadow DOM fechado, único) — borda inferior do vídeo
+  // Overlay (single, closed Shadow DOM) — bottom edge of the video
   // ---------------------------------------------------------------------------
-  // Remove um host órfão de uma injeção anterior, se houver.
+  // Remove an orphaned host from a previous injection, if any.
   for (const stale of document.querySelectorAll(OVERLAY_TAG)) stale.remove();
 
   const host = document.createElement(OVERLAY_TAG);
@@ -265,7 +265,7 @@
       background: #fff;
       color: #000;
     }
-    /* Área de toque da barra: mais alta que a linha visível. */
+    /* Bar hit area: taller than the visible line. */
     .seek {
       position: relative;
       height: 14px;
@@ -323,8 +323,8 @@
   const wrap = document.createElement("div");
   wrap.className = "wrap hidden";
 
-  // Linha de controles: tempo, velocidade e predefinições (tudo à esquerda,
-  // para não cobrir o botão de volume do Instagram no canto direito).
+  // Controls row: time, rate and presets (all on the left, so they do not
+  // cover Instagram's volume button in the right corner).
   const row = document.createElement("div");
   row.className = "row";
 
@@ -370,7 +370,7 @@
     row.appendChild(button);
   }
 
-  // Barra de progresso interativa.
+  // Interactive progress bar.
   const seek = document.createElement("div");
   seek.className = "seek";
   const track = document.createElement("div");
@@ -392,7 +392,7 @@
   let hideTimer = 0;
   let overlayVisible = false;
   let positionLoop = 0;
-  let dragVideo = null; // vídeo sendo arrastado (fixo durante o arrasto)
+  let dragVideo = null; // video being scrubbed (fixed for the whole drag)
   let dragPointer = null;
 
   function formatTime(seconds) {
@@ -460,8 +460,8 @@
     scheduleHide();
   }
 
-  // Permanece visível com o vídeo pausado, durante o arrasto ou com o mouse
-  // sobre os controles.
+  // Stay visible while the video is paused, during a drag or while the pointer
+  // is over the controls.
   function shouldStayVisible() {
     if (dragVideo || hoveringControls) return true;
     const video = getActiveVideo();
@@ -490,7 +490,7 @@
     hideTimer = setTimeout(hideOverlay, HIDE_DELAY_MS);
   }
 
-  // --- Arrasto da barra de progresso ---
+  // --- Progress bar dragging ---
   function seekToPointer(clientX) {
     const video = dragVideo;
     if (!video || !Number.isFinite(clientX)) return;
@@ -548,7 +548,7 @@
 
   updateOverlayLabel();
 
-  // Reaparece ao passar o mouse sobre o vídeo ativo (só compara coordenadas).
+  // Reappear when the pointer is over the active video (compares coordinates only).
   let pointerScheduled = false;
   let lastX = 0;
   let lastY = 0;
@@ -573,7 +573,7 @@
   );
 
   // ---------------------------------------------------------------------------
-  // 3. Teclado (um único listener, fase de captura)
+  // 3. Keyboard (a single listener, capture phase)
   // ---------------------------------------------------------------------------
   function isEditable(node) {
     if (!(node instanceof Element)) return false;
@@ -600,7 +600,7 @@
   );
 
   // ---------------------------------------------------------------------------
-  // Observação do DOM (um único MutationObserver com debounce)
+  // DOM observation (a single debounced MutationObserver)
   // ---------------------------------------------------------------------------
   const root = document.body || document.documentElement;
   const mo = new MutationObserver(scheduleScan);
