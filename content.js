@@ -265,8 +265,43 @@
       background: #fff;
       color: #000;
     }
+    /* Play/pause button + progress bar, on the same line. */
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .play {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border-radius: 50%;
+    }
+    /* Icon drawn with CSS borders: a triangle (play) or two bars (pause). */
+    .play .icon {
+      box-sizing: border-box;
+      width: 0;
+      height: 0;
+      margin-left: 2px;
+      border-style: solid;
+      border-color: transparent transparent transparent #fff;
+      border-width: 6px 0 6px 10px;
+    }
+    .play.playing .icon {
+      width: 9px;
+      height: 11px;
+      margin-left: 0;
+      border-color: #fff;
+      border-width: 0 3px;
+    }
     /* Bar hit area: taller than the visible line. */
     .seek {
+      flex: 1 1 auto;
+      min-width: 0;
       position: relative;
       height: 14px;
       pointer-events: auto;
@@ -370,6 +405,31 @@
     row.appendChild(button);
   }
 
+  // Play/pause button, to the left of the progress bar. Clicking the video
+  // itself in the feed opens the post, so this pauses without leaving the feed.
+  const bar = document.createElement("div");
+  bar.className = "bar";
+
+  const playButton = document.createElement("button");
+  playButton.type = "button";
+  playButton.tabIndex = -1;
+  playButton.className = "play";
+  const playIcon = document.createElement("span");
+  playIcon.className = "icon";
+  playButton.appendChild(playIcon);
+  playButton.addEventListener("pointerdown", stop);
+  playButton.addEventListener("pointerup", stop);
+  playButton.addEventListener("mousedown", stop);
+  playButton.addEventListener("mouseup", stop);
+  playButton.addEventListener("click", (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    togglePlay();
+  });
+  playButton.addEventListener("pointerenter", enterControls);
+  playButton.addEventListener("pointerleave", leaveControls);
+  bar.appendChild(playButton);
+
   // Interactive progress bar.
   const seek = document.createElement("div");
   seek.className = "seek";
@@ -382,9 +442,10 @@
   seek.appendChild(track);
   seek.appendChild(fill);
   seek.appendChild(thumb);
+  bar.appendChild(seek);
 
   wrap.appendChild(row);
-  wrap.appendChild(seek);
+  wrap.appendChild(bar);
   shadow.appendChild(style);
   shadow.appendChild(wrap);
   document.documentElement.appendChild(host);
@@ -411,7 +472,17 @@
     }
   }
 
+  let playState = "";
+  function updatePlayButton(video) {
+    const next = video.paused || video.ended ? "paused" : "playing";
+    if (next === playState) return;
+    playState = next;
+    playButton.classList[next === "playing" ? "add" : "remove"]("playing");
+    playButton.setAttribute("aria-label", next === "playing" ? "Pause" : "Play");
+  }
+
   function updateProgress(video) {
+    updatePlayButton(video);
     const duration = video.duration;
     const seekable = Number.isFinite(duration) && duration > 0;
     const ratio = seekable ? Math.min(1, Math.max(0, video.currentTime / duration)) : 0;

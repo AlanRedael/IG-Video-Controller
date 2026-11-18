@@ -15,11 +15,12 @@ The extension does **only** playback control: speed, skipping back/forward and p
 | Increase speed (+0.25x) | `D` | — |
 | Back 5 seconds | `Z` | — |
 | Forward 5 seconds | `X` | — |
-| Pause / resume | `V` | — |
+| Pause / resume | `V` | ▶ / ❚❚ (left of the progress bar) |
 
 - Speed always stays between **0.25x and 4x**.
-- A subtle overlay appears at the **bottom edge of the video** with the time (`0:12 / 0:45`), the current speed and the `1x`, `1,5x` and `2x` buttons (all aligned to the left), plus a **progress bar**.
+- A subtle overlay appears at the **bottom edge of the video** with the time (`0:12 / 0:45`), the current speed and the `1x`, `1,5x` and `2x` buttons (all aligned to the left), plus a **progress bar** with a **play/pause button** on its left.
   - The overlay is hidden and appears when you hover over the video, pause it or change the speed. It stays visible while the video is paused; during playback it hides after ~2 s without interaction.
+  - The play/pause button pauses or resumes the video without opening the post, which is what happens when you click the video itself in the feed. Its icon follows the video state (▶ when paused, ❚❚ when playing).
   - The bar is thin. On hover it gets thicker and shows a handle. **Click or drag** to jump to another point in the video.
 - The chosen speed **carries over when you switch Reels/videos** while the tab stays open. When you reload the page it goes back to 1x (nothing is persisted between sessions).
 - Shortcuts **do not fire** while you are typing (DMs, comments, search) or while `Ctrl`, `Alt` or `Cmd` is held down.
@@ -101,4 +102,5 @@ After loading the extension, run these tests and tick each item:
   - Hovering over the bar makes it thicker and shows the handle.
   - Clicking or dragging on the bar changes the video position without pausing or resuming it, and the `0:12 / 0:45` time follows along.
   - While dragging, releasing the mouse outside the video does not trigger any click on Instagram.
+- [ ] **9. Play/pause button:** in the main feed, click the button left of the progress bar. The video pauses **without opening the post**, and the icon changes to ▶. Click again; it resumes and the icon changes to ❚❚. Pausing with `V` also updates the icon.
 - [ ] **Extra:** `Z`/`X` go back/forward 5 s; `V` pauses and resumes.
