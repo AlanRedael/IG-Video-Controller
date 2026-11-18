@@ -124,6 +124,13 @@ The attempt at visual verification with headless Chrome was inconclusive: in hea
 - It is a user-visible change in a shipped file with no behavior change, so it is a PATCH under SemVer: version **1.0.1**, tag `v1.0.1` and notes in `docs/release-notes/v1.0.1.md`.
 - `CLAUDE.md` now requires proactive versioning: whenever a change warrants a new version, the bump and release are part of the task.
 
+## Iteration 7 — Play/pause button (version 1.1.0) ✅
+- In the main feed, clicking the video opens the post, so the only way to pause without leaving the feed was the `V` shortcut.
+- New round button to the **left of the progress bar**, on the same line; the bar shrinks to make room. It calls the same `togglePlay()` as `V` and stops `pointerdown`/`pointerup`/`mousedown`/`mouseup`/`click` propagation, like the other controls, so Instagram does not open the post.
+- The icon is drawn with CSS borders (triangle for play, two bars for pause) instead of Unicode characters, which some systems render as emoji. It is updated in the same animation loop that updates the bar, so it also follows pauses made with `V` or by Instagram itself.
+- New overlay control with no change to existing behavior: MINOR under SemVer, version **1.1.0**. Manifest and permissions unchanged.
+- Not yet tested on the real Instagram: README checklist item 9.
+
 ## Known limitations
 - If the extension is reloaded without reloading the page, the old (orphaned) script stays active in the tab until the page is reloaded. Chrome does not inject the new script into tabs that are already open, so there is no duplication. Detecting the orphaned script would require `chrome.runtime`, which is forbidden.
 - Pausing with `V` calls `video.pause()` directly, and Instagram's own play/pause icon may not reflect the change right away.
